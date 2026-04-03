@@ -89,7 +89,19 @@ def main() -> None:
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
-    settings = Settings()
+    try:
+        settings = Settings()
+    except Exception:
+        print(
+            "Error: THINGS_API_TOKEN is not set.\n"
+            "\n"
+            "Set it as an environment variable:\n"
+            "  THINGS_API_TOKEN=your-secret-token things-api\n"
+            "\n"
+            "Or create a .env file in the current directory:\n"
+            "  echo 'THINGS_API_TOKEN=your-secret-token' > .env"
+        )
+        raise SystemExit(1)
     app = create_app(settings)
     uvicorn.run(
         app,
