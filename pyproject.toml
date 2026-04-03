@@ -39,4 +39,6 @@ things-api = "things_api.app:main"
 
 [project.urls]
 Homepage = "https://github.com/jaydenk/things-api"
+Documentation = "https://github.com/jaydenk/things-api/tree/main/docs"
 Issues = "https://github.com/jaydenk/things-api/issues"
+Changelog = "https://github.com/jaydenk/things-api/blob/main/CHANGELOG.md"
