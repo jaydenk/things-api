@@ -1,6 +1,6 @@
 # Deployment
 
-These instructions assume you've already completed the [Getting Started](../README.md#getting-started) steps — the repo is cloned, dependencies are installed, and your `.env` file is configured.
+These instructions assume you've already completed the [Getting Started](../README.md#getting-started) steps and have a `.env` file configured.
 
 ## Running as a launchd service
 
@@ -8,16 +8,28 @@ A launchd agent keeps Things API running in the background. It starts automatica
 
 ### 1. Edit the plist template
 
-Open `com.things-api.server.plist` in the project root and set two paths:
+Open `com.things-api.server.plist` and set two paths:
 
-**`WorkingDirectory`** — the absolute path to your cloned `things-api` directory. This is where the server looks for your `.env` file.
+**`WorkingDirectory`** — the absolute path to the directory containing your `.env` file. If you cloned the repo, this is your `things-api` directory. If you installed via pip/uvx, this is wherever you put your `.env`.
 
 ```xml
 <key>WorkingDirectory</key>
 <string>/Users/yourname/things-api</string>
 ```
 
-**`ProgramArguments`** — the absolute path to `uv`. Find it with `which uv`.
+**`ProgramArguments`** — how to launch the server. Use full paths — launchd does not inherit your shell's `PATH`.
+
+If installed via **pip** or **uvx**:
+
+```xml
+<key>ProgramArguments</key>
+<array>
+    <string>/opt/homebrew/bin/uvx</string>
+    <string>things-api</string>
+</array>
+```
+
+If running from a **cloned repo**:
 
 ```xml
 <key>ProgramArguments</key>
@@ -28,7 +40,7 @@ Open `com.things-api.server.plist` in the project root and set two paths:
 </array>
 ```
 
-> **Note:** launchd does not inherit your shell's `PATH`, so you must use the full path to `uv`.
+Find the correct path with `which uvx` or `which uv`.
 
 ### 2. Install and load
 
