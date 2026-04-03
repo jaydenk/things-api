@@ -4,72 +4,68 @@ REST API for [Things 3](https://culturedcode.com/things/) — expose your tasks 
 
 Things API reads directly from the Things SQLite database via [things.py](https://github.com/thingsapi/things.py) and writes back through the [Things URL scheme](https://culturedcode.com/things/support/articles/2803573/). It runs as a lightweight FastAPI service on any Mac where Things is installed, giving you full programmatic access to your tasks from tools like [n8n](https://n8n.io/), [curl](https://curl.se/), or any HTTP client.
 
-## Installation
+## Getting started
 
-No install required — run directly with [`uvx`](https://docs.astral.sh/uv/):
+**Requirements:** macOS with [Things 3](https://culturedcode.com/things/) installed, Python 3.12+, and [uv](https://docs.astral.sh/uv/).
 
-```sh
-uvx things-api
-```
-
-Or install with pip:
+### 1. Clone and install
 
 ```sh
-pip install things-api
+git clone https://github.com/jaydenk/things-api.git
+cd things-api
+uv venv
+uv pip install -e .
 ```
 
-**Requirements:** macOS with [Things 3](https://culturedcode.com/things/) installed, Python 3.12+.
-
-## Configuration
-
-Copy `env.example` to `.env` and set your API token:
+### 2. Configure
 
 ```sh
 cp env.example .env
 ```
 
-The only required setting is `THINGS_API_TOKEN` — a secret string that authenticates every request:
+Open `.env` and set your API token — this is the bearer token that authenticates every request:
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `THINGS_API_TOKEN` | **Yes** | — | Bearer token for API authentication |
-| `THINGS_AUTH_TOKEN` | No | — | Things URL scheme auth token — enables write operations |
-| `THINGS_API_PORT` | No | `5225` | Port the server listens on |
-
-Without `THINGS_AUTH_TOKEN`, the API runs in **read-only mode** — write endpoints return `503`. To get a Things auth token, open **Things > Settings > General > Enable Things URLs** and copy the token.
-
-See [docs/configuration.md](docs/configuration.md) for the full list of configuration options.
-
-## Quick start
-
-Start the server:
-
-```sh
-things-api
+```dotenv
+THINGS_API_TOKEN=choose-a-secure-random-string
 ```
 
-List today's tasks:
+To enable write operations (creating, updating, completing todos), you also need a Things URL scheme auth token. To get one, open **Things > Settings > General > Enable Things URLs** and copy the token:
+
+```dotenv
+THINGS_AUTH_TOKEN=your-things-url-scheme-token
+```
+
+Without `THINGS_AUTH_TOKEN`, the API runs in **read-only mode**.
+
+See [docs/configuration.md](docs/configuration.md) for all configuration options.
+
+### 3. Run
 
 ```sh
+uv run things-api
+```
+
+The server starts on `http://localhost:5225`.
+
+### 4. Try it
+
+```sh
+# Health check
+curl http://localhost:5225/health \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# List today's tasks
 curl http://localhost:5225/today \
   -H "Authorization: Bearer YOUR_TOKEN"
-```
 
-Create a todo (requires `THINGS_AUTH_TOKEN`):
-
-```sh
+# Create a todo (requires THINGS_AUTH_TOKEN)
 curl -X POST http://localhost:5225/todos \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"title": "Buy milk", "when": "today"}'
 ```
 
-Check the server is healthy:
-
-```sh
-curl http://localhost:5225/health \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
+To run the server persistently (auto-start at login, auto-restart on crash), see the [deployment guide](docs/deployment.md).
 
 ## Endpoints overview
 
