@@ -2,7 +2,7 @@
   Things API launchd agent
 
   Install:
-    1. Edit this file — set WorkingDirectory and ProgramArguments paths
+    1. Edit this file — set WorkingDirectory and the path to uvx/uv
     2. Ensure your .env file exists in the working directory with THINGS_API_TOKEN set
     3. cp com.things-api.server.plist ~/Library/LaunchAgents/
     4. launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.things-api.server.plist
@@ -18,30 +18,29 @@
 	<key>Label</key>
 	<string>com.things-api.server</string>
 
-	<!-- Working directory — the server reads .env from here -->
+	<!-- The directory containing your .env file -->
 	<key>WorkingDirectory</key>
-	<string>/path/to/things-api</string>
+	<string>/path/to/directory-with-env-file</string>
 
 	<!--
-	  Option A: Run from local source (development / pre-PyPI)
-	  Uses uv run to execute from the project directory.
-	  Replace /path/to/uv with the output of: which uv
+	  Run from PyPI via uvx (recommended).
+	  Replace /path/to/uvx with the output of: which uvx
 	-->
 	<key>ProgramArguments</key>
 	<array>
-		<string>/path/to/uv</string>
-		<string>run</string>
+		<string>/path/to/uvx</string>
 		<string>things-api</string>
 	</array>
 
 	<!--
-	  Option B: Run from PyPI (after publishing)
-	  Uncomment this block and comment out Option A above.
-	  Replace /path/to/uvx with the output of: which uvx
+	  Alternative: run from a cloned repo with uv.
+	  Uncomment this block and comment out the uvx block above.
+	  Replace /path/to/uv with the output of: which uv
 
 	<key>ProgramArguments</key>
 	<array>
-		<string>/path/to/uvx</string>
+		<string>/path/to/uv</string>
+		<string>run</string>
 		<string>things-api</string>
 	</array>
 	-->

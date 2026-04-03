@@ -6,24 +6,33 @@ Things API reads directly from the Things SQLite database via [things.py](https:
 
 ## Getting started
 
-**Requirements:** macOS with [Things 3](https://culturedcode.com/things/) installed, Python 3.12+, and [uv](https://docs.astral.sh/uv/).
+**Requirements:** macOS with [Things 3](https://culturedcode.com/things/) installed and Python 3.12+.
 
-### 1. Clone and install
+### 1. Install
+
+Run directly with [`uvx`](https://docs.astral.sh/uv/) (no install needed):
+
+```sh
+uvx things-api
+```
+
+Or install with pip:
+
+```sh
+pip install things-api
+```
+
+Or clone the repo for development:
 
 ```sh
 git clone https://github.com/jaydenk/things-api.git
 cd things-api
-uv venv
-uv pip install -e .
+uv venv && uv pip install -e .
 ```
 
 ### 2. Configure
 
-```sh
-cp env.example .env
-```
-
-Open `.env` and set your API token — this is the bearer token that authenticates every request:
+Create a `.env` file in the directory you'll run the server from:
 
 ```dotenv
 THINGS_API_TOKEN=choose-a-secure-random-string
@@ -42,7 +51,7 @@ See [docs/configuration.md](docs/configuration.md) for all configuration options
 ### 3. Run
 
 ```sh
-uv run things-api
+things-api
 ```
 
 The server starts on `http://localhost:5225`.
