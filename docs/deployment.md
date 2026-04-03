@@ -2,28 +2,46 @@
 
 ## Running as a launchd service
 
-Create a launchd agent so Things API starts automatically at login.
+Create a launchd agent so Things API starts automatically at login and restarts if it crashes.
 
-### 1. Copy the plist template
+### 1. Set up your `.env` file
+
+The server reads configuration from a `.env` file in its working directory. If you haven't already:
+
+```sh
+cd /path/to/things-api
+cp env.example .env
+# Edit .env and set THINGS_API_TOKEN (required) and THINGS_AUTH_TOKEN (optional, for writes)
+```
+
+### 2. Edit the plist template
+
+Open `com.things-api.server.plist` and update:
+
+- **`WorkingDirectory`** — the path to your `things-api` directory (where `.env` lives)
+- **`ProgramArguments`** — the path to `uv` (run `which uv` to find it)
+
+The plist includes two options:
+
+| Option | When to use | ProgramArguments |
+|---|---|---|
+| **A: Local source** (default) | Development, or before publishing to PyPI | `uv run things-api` — runs from the local project |
+| **B: PyPI** | After publishing the package | `uvx things-api` — downloads and runs from PyPI |
+
+### 3. Install the plist
 
 ```sh
 cp com.things-api.server.plist ~/Library/LaunchAgents/
-```
-
-### 2. Edit the plist
-
-Open `~/Library/LaunchAgents/com.things-api.server.plist` and set:
-- The path to `uvx` (run `which uvx` to find it)
-- Your `THINGS_API_TOKEN`
-- Your `THINGS_AUTH_TOKEN` (if you want write access)
-
-### 3. Load the agent
-
-```sh
 launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.things-api.server.plist
 ```
 
-### 4. Stop and unload
+### 4. Verify it's running
+
+```sh
+curl -s http://localhost:5225/health -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### 5. Stop and unload
 
 ```sh
 launchctl bootout gui/$(id -u)/com.things-api.server
@@ -31,11 +49,17 @@ launchctl bootout gui/$(id -u)/com.things-api.server
 
 ### Logs
 
-The plist template writes logs to `/tmp/things-api.log`. Check them with:
+Logs are written to `/tmp/things-api.log`:
 
 ```sh
 tail -f /tmp/things-api.log
 ```
+
+### How it works
+
+- **`WorkingDirectory`** tells launchd to start the process in your project directory, so `pydantic-settings` automatically finds and loads the `.env` file — no need to duplicate tokens in the plist itself.
+- **`KeepAlive: true`** restarts the process if it crashes.
+- **`RunAtLoad: true`** starts it when you log in.
 
 ## n8n integration
 
