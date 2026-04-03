@@ -52,7 +52,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             write=settings.write_enabled,
         )
 
-    # Routers registered here as they are built in subsequent tasks
+    from things_api.routers import todos, projects, lists, tags, areas, search
+    app.include_router(todos.router)
+    app.include_router(projects.router)
+    app.include_router(lists.router)
+    app.include_router(tags.router)
+    app.include_router(areas.router)
+    app.include_router(search.router)
 
     return app
 
