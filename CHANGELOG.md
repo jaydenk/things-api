@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.2.1] — 2026-04-03
+
+### Added
+
+- Published to [PyPI](https://pypi.org/project/things-api/) — install with `pip install things-api` or run with `uvx things-api`
+- GitHub Actions CI/CD pipeline with tag-driven PyPI publishing via trusted publishers (OIDC)
+
+### Fixed
+
+- Friendly error message when `THINGS_API_TOKEN` is missing instead of a Pydantic traceback
+
 ## [0.1.0] — 2026-04-03
 
 ### Added
