@@ -79,9 +79,9 @@ Every endpoint requires a valid `Authorization: Bearer <token>` header.
 |---|---|---|
 | `GET` | `/todos` | List all incomplete todos. Supports query params: `project_id`, `area_id`, `tag`, `include_checklist` |
 | `GET` | `/todos/{id}` | Get a specific todo by UUID |
-| `POST` | `/todos` | Create a new todo. Body fields: `title` (required), `notes`, `when`, `deadline`, `tags`, `checklist_items`, `list_id`, `list_title`, `heading`, `heading_id` |
+| `POST` | `/todos` | Create a new todo (returns `202 Accepted`). Body fields: `title` (required), `notes`, `when`, `deadline`, `tags`, `checklist_items`, `list_id`, `list_title`, `heading`, `heading_id` |
 | `PUT` | `/todos/{id}` | Update an existing todo. Body fields: `title`, `notes`, `prepend_notes`, `append_notes`, `when`, `deadline`, `tags`, `add_tags`, `checklist_items`, `prepend_checklist_items`, `append_checklist_items`, `list_id`, `list_title`, `heading`, `heading_id` |
-| `DELETE` | `/todos/{id}` | Complete or cancel a todo. Optional body: `{"action": "complete"}` (default) or `{"action": "cancel"}` |
+| `DELETE` | `/todos/{id}` | **Irreversible.** Complete or cancel a todo. Optional body: `{"action": "complete"}` (default) or `{"action": "cancel"}` |
 
 ### Projects
 
@@ -89,9 +89,9 @@ Every endpoint requires a valid `Authorization: Bearer <token>` header.
 |---|---|---|
 | `GET` | `/projects` | List all projects |
 | `GET` | `/projects/{id}` | Get a project by UUID |
-| `POST` | `/projects` | Create a new project. Body fields: `title` (required), `notes`, `when`, `deadline`, `tags`, `area_id`, `area_title`, `todos` |
+| `POST` | `/projects` | Create a new project (returns `202 Accepted`). Body fields: `title` (required), `notes`, `when`, `deadline`, `tags`, `area_id`, `area_title`, `todos` |
 | `PUT` | `/projects/{id}` | Update an existing project. Body fields: `title`, `notes`, `prepend_notes`, `append_notes`, `when`, `deadline`, `tags`, `add_tags`, `area_id`, `area_title` |
-| `DELETE` | `/projects/{id}` | Complete or cancel a project. Optional body: `{"action": "complete"}` or `{"action": "cancel"}` |
+| `DELETE` | `/projects/{id}` | **Irreversible.** Complete or cancel a project. Optional body: `{"action": "complete"}` or `{"action": "cancel"}` |
 
 ### Smart lists
 

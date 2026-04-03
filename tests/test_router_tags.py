@@ -12,6 +12,7 @@ def client(monkeypatch):
 
     with patch("things_api.services.reader.things") as mock_things:
         mock_things.tags.return_value = [{"title": "errand"}]
+        mock_things.inbox.return_value = []
 
         from things_api.app import create_app
 

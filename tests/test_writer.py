@@ -83,7 +83,7 @@ async def test_subprocess_failure_raises(mock_exec, writer):
     mock_proc.stderr.read = AsyncMock(return_value=b"error")
     mock_exec.return_value = mock_proc
 
-    with pytest.raises(RuntimeError, match="URL scheme command failed"):
+    with pytest.raises(RuntimeError, match="Write operation failed"):
         await writer.create_todo(title="Fail")
 
 

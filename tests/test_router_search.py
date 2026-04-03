@@ -17,6 +17,7 @@ def client(monkeypatch):
         mock_things.todos.return_value = [
             {"uuid": "t1", "title": "Tagged", "status": "incomplete"}
         ]
+        mock_things.inbox.return_value = []
 
         from things_api.app import create_app
 
