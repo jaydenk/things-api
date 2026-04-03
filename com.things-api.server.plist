@@ -1,0 +1,40 @@
+<!--
+  Things API launchd agent
+
+  Install:
+    cp com.things-api.server.plist ~/Library/LaunchAgents/
+    # Edit the plist to set your tokens and uvx path
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.things-api.server.plist
+
+  Uninstall:
+    launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.things-api.server.plist
+    rm ~/Library/LaunchAgents/com.things-api.server.plist
+-->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.things-api.server</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/path/to/uvx</string>
+		<string>things-api</string>
+	</array>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>THINGS_API_TOKEN</key>
+		<string>your-api-token-here</string>
+		<key>THINGS_AUTH_TOKEN</key>
+		<string>your-auth-token-here</string>
+	</dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardOutPath</key>
+	<string>~/Library/Logs/things-api.log</string>
+	<key>StandardErrorPath</key>
+	<string>~/Library/Logs/things-api.log</string>
+</dict>
+</plist>
