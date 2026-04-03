@@ -35,6 +35,9 @@ class ThingsWriter:
     async def _execute(self, url: str) -> None:
         """Open a Things URL scheme command."""
         redacted = url.replace(self._auth_token, "REDACTED")
+        redacted = redacted.replace(
+            quote(self._auth_token, safe=""), "REDACTED"
+        )
         logger.info("Executing: %s", redacted)
 
         proc = await asyncio.create_subprocess_exec(
@@ -44,9 +47,11 @@ class ThingsWriter:
         returncode = await proc.wait()
         if returncode != 0:
             stderr = await proc.stderr.read() if proc.stderr else b""
-            raise RuntimeError(
-                f"URL scheme command failed (exit {returncode}): {stderr.decode()}"
+            logger.error(
+                "URL scheme command failed (exit %d): %s",
+                returncode, stderr.decode(),
             )
+            raise RuntimeError("Write operation failed")
 
     async def create_todo(self, **params) -> None:
         url = self._build_url("add", **params)

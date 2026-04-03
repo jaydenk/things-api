@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings
 
 
@@ -13,8 +14,8 @@ class Settings(BaseSettings):
 
     things_api_host: str = "0.0.0.0"
     things_api_port: int = 5225
-    things_api_token: str
-    things_auth_token: str | None = None
+    things_api_token: SecretStr
+    things_auth_token: SecretStr | None = None
     things_db_path: Path | None = None
     things_verify_timeout: float = 0.5
 
@@ -23,4 +24,6 @@ class Settings(BaseSettings):
     @property
     def write_enabled(self) -> bool:
         """Whether write operations are available."""
-        return self.things_auth_token is not None
+        return self.things_auth_token is not None and bool(
+            self.things_auth_token.get_secret_value()
+        )

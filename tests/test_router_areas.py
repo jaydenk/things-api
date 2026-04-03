@@ -14,6 +14,7 @@ def client(monkeypatch):
         mock_things.areas.return_value = [
             {"uuid": "a1", "title": "Work"}
         ]
+        mock_things.inbox.return_value = []
 
         from things_api.app import create_app
 

@@ -1,4 +1,3 @@
-import os
 import pytest
 
 
@@ -10,7 +9,7 @@ def test_settings_loads_from_env(monkeypatch):
     from things_api.config import Settings
 
     s = Settings()
-    assert s.things_api_token == "test-token-123"
+    assert s.things_api_token.get_secret_value() == "test-token-123"
     assert s.things_api_host == "127.0.0.1"
     assert s.things_api_port == 9999
 
@@ -51,3 +50,23 @@ def test_write_disabled_without_auth_token(monkeypatch):
 
     s = Settings()
     assert s.write_enabled is False
+
+
+def test_write_disabled_with_empty_auth_token(monkeypatch):
+    monkeypatch.setenv("THINGS_API_TOKEN", "test-token")
+    monkeypatch.setenv("THINGS_AUTH_TOKEN", "")
+    from things_api.config import Settings
+
+    s = Settings()
+    assert s.write_enabled is False
+
+
+def test_secret_str_repr_hides_tokens(monkeypatch):
+    monkeypatch.setenv("THINGS_API_TOKEN", "super-secret")
+    monkeypatch.setenv("THINGS_AUTH_TOKEN", "also-secret")
+    from things_api.config import Settings
+
+    s = Settings()
+    settings_repr = repr(s)
+    assert "super-secret" not in settings_repr
+    assert "also-secret" not in settings_repr

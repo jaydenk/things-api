@@ -33,8 +33,8 @@
 	<key>RunAtLoad</key>
 	<true/>
 	<key>StandardOutPath</key>
-	<string>~/Library/Logs/things-api.log</string>
+	<string>/tmp/things-api.log</string>
 	<key>StandardErrorPath</key>
-	<string>~/Library/Logs/things-api.log</string>
+	<string>/tmp/things-api.log</string>
 </dict>
 </plist>

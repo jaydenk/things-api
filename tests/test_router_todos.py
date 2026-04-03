@@ -17,6 +17,7 @@ def client(monkeypatch):
         mock_things.get.return_value = {
             "uuid": "t1", "title": "Buy milk", "status": "incomplete"
         }
+        mock_things.inbox.return_value = []
 
         from things_api.app import create_app
 
@@ -47,7 +48,8 @@ def test_create_todo(client):
             json={"title": "New task"},
             headers=AUTH,
         )
-        assert resp.status_code in (201, 202)
+        assert resp.status_code == 202
+        assert resp.json()["status"] == "accepted"
 
 
 def test_create_todo_requires_title(client):

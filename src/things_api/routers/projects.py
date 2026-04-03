@@ -6,6 +6,7 @@ import asyncio
 import logging
 
 from fastapi import APIRouter, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 
 from things_api.models import (
     CreateProjectRequest,
@@ -33,7 +34,7 @@ async def get_project(request: Request, project_id: str):
     return result
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post("")
 async def create_project(request: Request, body: CreateProjectRequest):
     """Create a new project."""
     writer = request.app.state.writer
@@ -48,13 +49,10 @@ async def create_project(request: Request, body: CreateProjectRequest):
 
     await writer.create_project(**params)
 
-    await asyncio.sleep(request.app.state.settings.things_verify_timeout)
-    results = request.app.state.reader.projects()
-    for item in results:
-        if item.get("title") == body.title:
-            return item
-
-    return {"status": "accepted", "title": body.title}
+    return JSONResponse(
+        status_code=status.HTTP_202_ACCEPTED,
+        content={"status": "accepted", "title": body.title},
+    )
 
 
 @router.put("/{project_id}")
@@ -77,14 +75,23 @@ async def update_project(
 
     await asyncio.sleep(request.app.state.settings.things_verify_timeout)
     updated = request.app.state.reader.get(project_id)
-    return updated if updated else {"status": "accepted", "uuid": project_id}
+    if updated:
+        return updated
+    return JSONResponse(
+        status_code=status.HTTP_202_ACCEPTED,
+        content={"status": "accepted", "uuid": project_id},
+    )
 
 
 @router.delete("/{project_id}")
 async def delete_project(
     request: Request, project_id: str, body: DeleteRequest | None = None
 ):
-    """Complete or cancel a project."""
+    """Complete or cancel a project (irreversible).
+
+    Things 3 does not support true deletion. This endpoint marks the project as
+    completed (default) or cancelled. Pass {"action": "cancel"} to cancel instead.
+    """
     writer = request.app.state.writer
     if writer is None:
         raise HTTPException(
