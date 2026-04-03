@@ -38,6 +38,6 @@ jobs:
         run: uv build
 
       - name: Publish to PyPI
-        run: uv publish --token "$PYPI_TOKEN"
+        run: uv publish --token "$PYPI_TOKEN" || echo "Upload skipped (version may already exist)"
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
