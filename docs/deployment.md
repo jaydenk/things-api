@@ -1,55 +1,59 @@
 # Deployment
 
+These instructions assume you've already completed the [Getting Started](../README.md#getting-started) steps — the repo is cloned, dependencies are installed, and your `.env` file is configured.
+
 ## Running as a launchd service
 
-Create a launchd agent so Things API starts automatically at login and restarts if it crashes.
+A launchd agent keeps Things API running in the background. It starts automatically at login and restarts if it crashes.
 
-### 1. Set up your `.env` file
+### 1. Edit the plist template
 
-The server reads configuration from a `.env` file in its working directory. If you haven't already:
+Open `com.things-api.server.plist` in the project root and set two paths:
 
-```sh
-cd /path/to/things-api
-cp env.example .env
-# Edit .env and set THINGS_API_TOKEN (required) and THINGS_AUTH_TOKEN (optional, for writes)
+**`WorkingDirectory`** — the absolute path to your cloned `things-api` directory. This is where the server looks for your `.env` file.
+
+```xml
+<key>WorkingDirectory</key>
+<string>/Users/yourname/things-api</string>
 ```
 
-### 2. Edit the plist template
+**`ProgramArguments`** — the absolute path to `uv`. Find it with `which uv`.
 
-Open `com.things-api.server.plist` and update:
+```xml
+<key>ProgramArguments</key>
+<array>
+    <string>/opt/homebrew/bin/uv</string>
+    <string>run</string>
+    <string>things-api</string>
+</array>
+```
 
-- **`WorkingDirectory`** — the path to your `things-api` directory (where `.env` lives)
-- **`ProgramArguments`** — the path to `uv` (run `which uv` to find it)
+> **Note:** launchd does not inherit your shell's `PATH`, so you must use the full path to `uv`.
 
-The plist includes two options:
-
-| Option | When to use | ProgramArguments |
-|---|---|---|
-| **A: Local source** (default) | Development, or before publishing to PyPI | `uv run things-api` — runs from the local project |
-| **B: PyPI** | After publishing the package | `uvx things-api` — downloads and runs from PyPI |
-
-### 3. Install the plist
+### 2. Install and load
 
 ```sh
 cp com.things-api.server.plist ~/Library/LaunchAgents/
 launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.things-api.server.plist
 ```
 
-### 4. Verify it's running
+### 3. Verify
 
 ```sh
 curl -s http://localhost:5225/health -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-### 5. Stop and unload
+You should see `{"status":"healthy","read":true,...}`.
+
+### 4. Stop and unload
 
 ```sh
 launchctl bootout gui/$(id -u)/com.things-api.server
 ```
 
-### Logs
+To reload after editing the plist, bootout then bootstrap again.
 
-Logs are written to `/tmp/things-api.log`:
+### Logs
 
 ```sh
 tail -f /tmp/things-api.log
@@ -57,9 +61,9 @@ tail -f /tmp/things-api.log
 
 ### How it works
 
-- **`WorkingDirectory`** tells launchd to start the process in your project directory, so `pydantic-settings` automatically finds and loads the `.env` file — no need to duplicate tokens in the plist itself.
-- **`KeepAlive: true`** restarts the process if it crashes.
-- **`RunAtLoad: true`** starts it when you log in.
+- **`WorkingDirectory`** — launchd starts the process in your project directory, so `pydantic-settings` automatically loads the `.env` file. No tokens need to be hardcoded in the plist.
+- **`KeepAlive: true`** — restarts the process if it crashes.
+- **`RunAtLoad: true`** — starts when you log in.
 
 ## n8n integration
 
