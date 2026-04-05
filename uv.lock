@@ -389,9 +389,10 @@ wheels = [
 
 [[package]]
 name = "things-api"
-version = "0.1.0"
+version = "0.2.1"
 source = { editable = "." }
 dependencies = [
+    { name = "click" },
     { name = "fastapi" },
     { name = "pydantic-settings" },
     { name = "things-py" },
@@ -407,6 +408,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
+    { name = "click", specifier = ">=8,<9" },
     { name = "fastapi", specifier = ">=0.135,<1" },
     { name = "httpx", marker = "extra == 'test'", specifier = ">=0.28" },
     { name = "pydantic-settings", specifier = ">=2.13,<3" },

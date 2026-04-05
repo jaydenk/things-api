@@ -32,19 +32,13 @@ uv venv && uv pip install -e .
 
 ### 2. Configure
 
-Create a `.env` file in the directory you'll run the server from:
+Run the setup wizard:
 
-```dotenv
-THINGS_API_TOKEN=choose-a-secure-random-string
+```sh
+things-api init
 ```
 
-To enable write operations (creating, updating, completing todos), you also need a Things URL scheme auth token. To get one, open **Things > Settings > General > Enable Things URLs** and copy the token:
-
-```dotenv
-THINGS_AUTH_TOKEN=your-things-url-scheme-token
-```
-
-Without `THINGS_AUTH_TOKEN`, the API runs in **read-only mode**.
+This generates an API token, checks your Things URL scheme settings, and writes the config to `~/.config/things-api/config`. If you skip this step, the wizard runs automatically on first launch.
 
 See [docs/configuration.md](docs/configuration.md) for all configuration options.
 
@@ -54,7 +48,13 @@ See [docs/configuration.md](docs/configuration.md) for all configuration options
 things-api
 ```
 
-The server starts on `http://localhost:5225`.
+Override settings on the fly:
+
+```sh
+things-api --token my-token --port 8080
+```
+
+The server starts on `http://localhost:5225` by default.
 
 ### 4. Try it
 

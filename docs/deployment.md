@@ -1,25 +1,22 @@
 # Deployment
 
-These instructions assume you've already completed the [Getting Started](../README.md#getting-started) steps and have a `.env` file configured.
-
 ## Running as a launchd service
 
 A launchd agent keeps Things API running in the background. It starts automatically at login and restarts if it crashes.
 
-### 1. Edit the plist template
+### 1. Run the setup wizard
 
-Open `com.things-api.server.plist` and set two paths:
+If you haven't already:
 
-**`WorkingDirectory`** — the absolute path to the directory containing your `.env` file. If you cloned the repo, this is your `things-api` directory. If you installed via pip/uvx, this is wherever you put your `.env`.
-
-```xml
-<key>WorkingDirectory</key>
-<string>/Users/yourname/things-api</string>
+```sh
+things-api init
 ```
 
-**`ProgramArguments`** — how to launch the server. Use full paths — launchd does not inherit your shell's `PATH`.
+This creates your config at `~/.config/things-api/config`.
 
-If installed via **pip** or **uvx**:
+### 2. Edit the plist template
+
+Open `com.things-api.server.plist` in the project root (or [download it from GitHub](https://github.com/jaydenk/things-api/blob/main/com.things-api.server.plist)) and set the path to `uvx`:
 
 ```xml
 <key>ProgramArguments</key>
@@ -29,35 +26,22 @@ If installed via **pip** or **uvx**:
 </array>
 ```
 
-If running from a **cloned repo**:
+Find the correct path with `which uvx`. launchd does not inherit your shell's `PATH`, so you must use the full path.
 
-```xml
-<key>ProgramArguments</key>
-<array>
-    <string>/opt/homebrew/bin/uv</string>
-    <string>run</string>
-    <string>things-api</string>
-</array>
-```
-
-Find the correct path with `which uvx` or `which uv`.
-
-### 2. Install and load
+### 3. Install and load
 
 ```sh
 cp com.things-api.server.plist ~/Library/LaunchAgents/
 launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.things-api.server.plist
 ```
 
-### 3. Verify
+### 4. Verify
 
 ```sh
 curl -s http://localhost:5225/health -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-You should see `{"status":"healthy","read":true,...}`.
-
-### 4. Stop and unload
+### 5. Stop and unload
 
 ```sh
 launchctl bootout gui/$(id -u)/com.things-api.server
@@ -70,12 +54,6 @@ To reload after editing the plist, bootout then bootstrap again.
 ```sh
 tail -f /tmp/things-api.log
 ```
-
-### How it works
-
-- **`WorkingDirectory`** — launchd starts the process in your project directory, so `pydantic-settings` automatically loads the `.env` file. No tokens need to be hardcoded in the plist.
-- **`KeepAlive: true`** — restarts the process if it crashes.
-- **`RunAtLoad: true`** — starts when you log in.
 
 ## n8n integration
 
@@ -94,6 +72,6 @@ For write operations, set the body content type to JSON and pass the relevant fi
 
 ## Network access
 
-By default, the server binds to `0.0.0.0`, making it accessible on all network interfaces. To restrict to localhost only, set `THINGS_API_HOST=127.0.0.1` in your `.env`.
+By default, the server binds to `0.0.0.0`, making it accessible on all network interfaces. To restrict to localhost only, add `THINGS_API_HOST=127.0.0.1` to your config file at `~/.config/things-api/config`.
 
 For remote access (e.g. from another machine on your network or via [Tailscale](https://tailscale.com/)), the default `0.0.0.0` binding works — just ensure the port (default `5225`) is accessible and use your machine's IP or Tailscale hostname in requests.
