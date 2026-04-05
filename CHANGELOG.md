@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.2] — 2026-04-05
+
+### Fixed
+
+- Server hangs under launchd when no config exists — the init wizard blocks waiting for TTY input that never comes. Now detects non-interactive mode (`sys.stdin.isatty()`) and exits with a clear error message instead of blocking.
+
 ## [0.3.1] — 2026-04-05
 
 ### Fixed
