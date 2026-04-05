@@ -28,20 +28,30 @@ Open `com.things-api.server.plist` in the project root (or [download it from Git
 
 Find the correct path with `which uvx`. launchd does not inherit your shell's `PATH`, so you must use the full path.
 
-### 3. Install and load
+### 3. Grant Full Disk Access
+
+macOS restricts launchd agents from accessing the Things SQLite database in `~/Library/Group Containers/`. You must grant Full Disk Access to `uv`:
+
+1. Open **System Settings > Privacy & Security > Full Disk Access**
+2. Click `+`, press `Cmd+Shift+G`, and enter `/opt/homebrew/bin/uv`
+3. Toggle it on
+
+Without this, the server will hang on startup trying to read the database.
+
+### 4. Install and load
 
 ```sh
 cp com.things-api.server.plist ~/Library/LaunchAgents/
 launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.things-api.server.plist
 ```
 
-### 4. Verify
+### 5. Verify
 
 ```sh
 curl -s http://localhost:5225/health -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-### 5. Stop and unload
+### 6. Stop and unload
 
 ```sh
 launchctl bootout gui/$(id -u)/com.things-api.server
