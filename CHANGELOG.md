@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] — 2026-04-05
+
+### Fixed
+
+- Init wizard crash: config file wasn't found by Settings after being created, because env file list was evaluated at import time. Now always includes the config path so pydantic-settings picks it up immediately after creation.
+
 ## [0.3.0] — 2026-04-05
 
 ### Added
