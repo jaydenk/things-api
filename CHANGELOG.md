@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] — 2026-04-05
+
+### Added
+
+- `things-api init` — interactive setup wizard that generates an API token, detects Things URL scheme status, and writes config to `~/.config/things-api/config`
+- `--token` and `--port` CLI flags for on-the-fly overrides
+- Auto-launches init wizard on first run when no config exists
+- Fixed config file path at `~/.config/things-api/config` — no more CWD-dependent `.env` files
+- Config resolution order: CLI flags > env vars > config file > CWD `.env` > defaults
+
+### Changed
+
+- CLI framework switched from raw uvicorn to Click
+- Simplified launchd plist — no `WorkingDirectory` needed
+
 ## [0.2.1] — 2026-04-03
 
 ### Added
