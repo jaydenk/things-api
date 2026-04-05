@@ -10,13 +10,13 @@ CONFIG_FILE = CONFIG_DIR / "config"
 
 
 def _env_files() -> tuple[str, ...]:
-    """Return env files in priority order (later entries override earlier ones)."""
-    files: list[str] = []
-    cwd_env = Path(".env")
-    if cwd_env.is_file():
-        files.append(str(cwd_env))
-    if CONFIG_FILE.is_file():
-        files.append(str(CONFIG_FILE))
+    """Return env files in priority order (later entries override earlier ones).
+
+    Always includes CONFIG_FILE even if it doesn't exist yet — pydantic-settings
+    silently ignores missing files. This avoids stale results when the config is
+    created after import (e.g. by the init wizard).
+    """
+    files: list[str] = [".env", str(CONFIG_FILE)]
     return tuple(files)
 
 
