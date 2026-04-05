@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import sys
 
 import click
 import uvicorn
@@ -83,17 +84,20 @@ def cli(ctx: click.Context, token: str | None, port: int | None) -> None:
             overrides["things_api_port"] = port
         settings = Settings(**overrides)
     except Exception:
-        if not CONFIG_FILE.exists():
+        if not CONFIG_FILE.exists() and sys.stdin.isatty():
             click.echo("No configuration found. Let's set one up.\n")
             _run_init()
             click.echo()
             settings = Settings()
         else:
-            click.echo(
-                f"Error: THINGS_API_TOKEN is not set.\n"
-                f"\n"
-                f"Run 'things-api init' to reconfigure, or pass --token.\n"
+            msg = (
+                "Error: THINGS_API_TOKEN is not set.\n"
+                "\n"
+                "Run 'things-api init' to configure, or pass --token.\n"
             )
+            if not sys.stdin.isatty():
+                msg += f"Config file: {CONFIG_FILE}\n"
+            click.echo(msg)
             raise SystemExit(1)
 
     from things_api.app import create_app
