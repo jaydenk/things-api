@@ -22,7 +22,9 @@ Tests mock the `things.py` library and subprocess calls — you don't need Thing
 ## Running locally
 
 ```sh
-THINGS_API_TOKEN=dev-token uv run things-api
+uv run things-api init              # First-time setup
+uv run things-api                   # Start the server
+uv run things-api --token dev-token # Override token for testing
 ```
 
 The server starts on `http://localhost:5225`.
@@ -31,9 +33,11 @@ The server starts on `http://localhost:5225`.
 
 ```
 src/things_api/
-├── app.py              # FastAPI app factory and CLI entrypoint
+├── app.py              # FastAPI app factory
 ├── auth.py             # Bearer token authentication
-├── config.py           # Settings (pydantic-settings)
+├── cli.py              # Click CLI (entrypoint)
+├── config.py           # Settings and config file path constants
+├── init.py             # Setup wizard (token generation, Things detection)
 ├── models.py           # Pydantic request/response schemas
 ├── ratelimit.py        # Auth rate limiting middleware
 ├── routers/

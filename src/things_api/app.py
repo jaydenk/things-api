@@ -1,11 +1,10 @@
-"""FastAPI application factory and entrypoint."""
+"""FastAPI application factory."""
 
 from __future__ import annotations
 
 import logging
 
-import uvicorn
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from things_api.auth import require_token
@@ -81,30 +80,3 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(search.router)
 
     return app
-
-
-def main() -> None:
-    """CLI entrypoint."""
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    )
-    try:
-        settings = Settings()
-    except Exception:
-        print(
-            "Error: THINGS_API_TOKEN is not set.\n"
-            "\n"
-            "Set it as an environment variable:\n"
-            "  THINGS_API_TOKEN=your-secret-token things-api\n"
-            "\n"
-            "Or create a .env file in the current directory:\n"
-            "  echo 'THINGS_API_TOKEN=your-secret-token' > .env"
-        )
-        raise SystemExit(1)
-    app = create_app(settings)
-    uvicorn.run(
-        app,
-        host=settings.things_api_host,
-        port=settings.things_api_port,
-    )

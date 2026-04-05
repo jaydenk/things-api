@@ -1,6 +1,38 @@
 # Configuration
 
-All settings are read from environment variables or a `.env` file in the working directory. Copy `env.example` to `.env` and adjust as needed.
+## Quick setup
+
+Run the interactive setup wizard:
+
+```sh
+things-api init
+```
+
+This generates an API token, detects your Things URL scheme settings, and writes the config to `~/.config/things-api/config`. If you skip this step, the wizard runs automatically on first launch.
+
+## Config resolution order
+
+Settings are resolved in this priority (highest wins):
+
+```
+CLI flags (--token, --port)
+    ↓
+Environment variables (THINGS_API_TOKEN, etc.)
+    ↓
+~/.config/things-api/config
+    ↓
+.env in current working directory
+    ↓
+Defaults
+```
+
+## CLI flags
+
+```sh
+things-api --token SECRET --port 8080
+```
+
+Only `--token` and `--port` are available as flags. All other settings use the config file or environment variables.
 
 ## Environment variables
 
@@ -13,6 +45,16 @@ All settings are read from environment variables or a `.env` file in the working
 | `THINGS_DB_PATH` | No | Auto-detected | Override the path to the Things SQLite database. By default, `things.py` finds it automatically. |
 | `THINGS_VERIFY_TIMEOUT` | No | `0.5` | Seconds to wait after a write before reading back the result for verification |
 
+## Config file format
+
+The config file at `~/.config/things-api/config` uses dotenv format:
+
+```dotenv
+THINGS_API_TOKEN=tk_a7f3b9c2e1d8...
+THINGS_AUTH_TOKEN=your-things-auth-token
+THINGS_API_PORT=5225
+```
+
 ## Read-only vs read-write mode
 
 Without `THINGS_AUTH_TOKEN`, the API runs in **read-only mode**. All `GET` endpoints work normally, but `POST`, `PUT`, and `DELETE` return `503 Service Unavailable`.
@@ -22,7 +64,7 @@ To enable write operations:
 1. Open **Things 3**
 2. Go to **Settings > General > Enable Things URLs**
 3. Copy the auth token
-4. Set `THINGS_AUTH_TOKEN` in your `.env` file
+4. Run `things-api init` and paste the token when prompted, or add `THINGS_AUTH_TOKEN=...` to your config file
 
 ## Security notes
 
